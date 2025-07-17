@@ -1,0 +1,1590 @@
+basePath: /
+definitions:
+  auth.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  auth.LoginResponse:
+    properties:
+      expire:
+        type: string
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/users.User'
+    type: object
+  items.Item:
+    properties:
+      code:
+        type: string
+      cost:
+        type: number
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      price:
+        type: number
+    required:
+    - code
+    - cost
+    - description
+    - id
+    - is_active
+    - price
+    type: object
+  items.ItemRequest:
+    properties:
+      code:
+        type: string
+      cost:
+        type: number
+      description:
+        type: string
+      price:
+        type: number
+    required:
+    - code
+    - cost
+    - description
+    - price
+    type: object
+  purchases.PurchaseDetail:
+    properties:
+      amount:
+        example: 155
+        type: number
+      cost:
+        example: 15.5
+        type: number
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174002
+        type: string
+      item_code:
+        example: ITEM-001
+        type: string
+      item_description:
+        example: Sample Item Description
+        type: string
+      item_id:
+        example: 123e4567-e89b-12d3-a456-426614174001
+        type: string
+      purchase_header_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      quantity:
+        example: 10
+        type: integer
+    type: object
+  purchases.PurchaseDetailRequest:
+    properties:
+      amount:
+        example: 155
+        minimum: 0
+        type: number
+      cost:
+        example: 15.5
+        minimum: 0
+        type: number
+      item_id:
+        example: 123e4567-e89b-12d3-a456-426614174001
+        type: string
+      purchase_header_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      quantity:
+        example: 10
+        minimum: 1
+        type: integer
+    required:
+    - amount
+    - cost
+    - item_id
+    - purchase_header_id
+    - quantity
+    type: object
+  purchases.PurchaseHeader:
+    properties:
+      code:
+        example: PH-001
+        type: string
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  purchases.PurchaseHeaderRequest:
+    properties:
+      code:
+        example: PH-001
+        type: string
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    required:
+    - code
+    - created_at
+    type: object
+  sales.SalesDetail:
+    properties:
+      amount:
+        type: number
+      id:
+        type: string
+      item_code:
+        type: string
+      item_description:
+        type: string
+      item_id:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      sales_header_id:
+        type: string
+    required:
+    - amount
+    - id
+    - item_code
+    - item_description
+    - item_id
+    - price
+    - quantity
+    - sales_header_id
+    type: object
+  sales.SalesDetailRequest:
+    properties:
+      amount:
+        type: number
+      item_id:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      sales_header_id:
+        type: string
+    required:
+    - amount
+    - item_id
+    - price
+    - quantity
+    - sales_header_id
+    type: object
+  sales.SalesHeader:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      customer_name:
+        type: string
+      id:
+        type: string
+      sent:
+        type: boolean
+    required:
+    - code
+    - created_at
+    - customer_name
+    - id
+    - sent
+    type: object
+  sales.SalesHeaderRequest:
+    properties:
+      code:
+        type: string
+      customer_name:
+        type: string
+    required:
+    - code
+    - customer_name
+    type: object
+  stock.Stock:
+    properties:
+      id:
+        type: string
+      item_code:
+        type: string
+      item_description:
+        type: string
+      item_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  stock.UpdateStockQuantityRequest:
+    properties:
+      quantity:
+        type: integer
+    required:
+    - quantity
+    type: object
+  users.ChangePasswordRequest:
+    properties:
+      id:
+        type: string
+      password:
+        type: string
+    required:
+    - id
+    - password
+    type: object
+  users.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  users.UpdateUserRequest:
+    properties:
+      is_active:
+        type: boolean
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  users.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  users.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8125
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API per gestionar compres, ventes i stocks bàsica
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: FRDY API
+  version: "1.0"
+paths:
+  /api/items:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of items
+          schema:
+            items:
+              $ref: '#/definitions/items.Item'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all items
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: Creates a new item with the provided information
+      parameters:
+      - description: Item data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/items.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Item created successfully
+          schema:
+            $ref: '#/definitions/items.Item'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new item
+      tags:
+      - items
+  /api/items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Item deleted successfully
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete an item
+      tags:
+      - items
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item found
+          schema:
+            $ref: '#/definitions/items.Item'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get an item by ID
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing item with the provided information
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/items.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item updated successfully
+          schema:
+            $ref: '#/definitions/items.Item'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an item
+      tags:
+      - items
+  /api/items/code/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an item by its code
+      parameters:
+      - description: Item code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item found
+          schema:
+            $ref: '#/definitions/items.Item'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get an item by code
+      tags:
+      - items
+  /api/sales/customers/{customerName}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sales information by customer name (Protected route)
+      parameters:
+      - description: Customer Name
+        in: path
+        name: customerName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/sales.SalesHeader'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales by customer name
+      tags:
+      - sales-queries
+  /api/sales/details:
+    post:
+      consumes:
+      - application/json
+      description: Create a new sales detail with the provided information (Protected
+        route)
+      parameters:
+      - description: Sales detail data
+        in: body
+        name: detail
+        required: true
+        schema:
+          $ref: '#/definitions/sales.SalesDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/sales.SalesDetail'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new sales detail
+      tags:
+      - sales-details
+  /api/sales/details/{headerID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all sales details for a specific header ID (Protected
+        route)
+      parameters:
+      - description: Sales Header ID
+        in: path
+        name: headerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/sales.SalesDetail'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales details by header ID
+      tags:
+      - sales-details
+  /api/sales/details/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete sales detail information by ID (Protected route)
+      parameters:
+      - description: Sales Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete sales detail by ID
+      tags:
+      - sales-details
+    put:
+      consumes:
+      - application/json
+      description: Update sales detail information by ID (Protected route)
+      parameters:
+      - description: Sales Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Sales detail update data
+        in: body
+        name: detail
+        required: true
+        schema:
+          $ref: '#/definitions/sales.SalesDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sales.SalesDetail'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a sales detail
+      tags:
+      - sales-details
+  /api/sales/headers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all sales headers (Protected route)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/sales.SalesHeader'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all sales
+      tags:
+      - sales-headers
+    post:
+      consumes:
+      - application/json
+      description: Create a new sales header with the provided information (Protected
+        route)
+      parameters:
+      - description: Sales header data
+        in: body
+        name: header
+        required: true
+        schema:
+          $ref: '#/definitions/sales.SalesHeaderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/sales.SalesHeader'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new sales header
+      tags:
+      - sales-headers
+  /api/sales/headers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete sales information by header ID (Protected route)
+      parameters:
+      - description: Sales Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete sales by header ID
+      tags:
+      - sales-headers
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sales information by header ID (Protected route)
+      parameters:
+      - description: Sales Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sales.SalesHeader'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales by header ID
+      tags:
+      - sales-headers
+    put:
+      consumes:
+      - application/json
+      description: Update sales header information by ID (Protected route)
+      parameters:
+      - description: Sales Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Sales header update data
+        in: body
+        name: header
+        required: true
+        schema:
+          $ref: '#/definitions/sales.SalesHeaderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sales.SalesHeader'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a sales header
+      tags:
+      - sales-headers
+  /api/sales/headers/code/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sales information by header code (Protected route)
+      parameters:
+      - description: Sales Header Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sales.SalesHeader'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales by header code
+      tags:
+      - sales-headers
+  /api/sales/headers/send/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Send/confirm a sales header by ID (Protected route)
+      parameters:
+      - description: Sales Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sales.SalesHeader'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Send sales header
+      tags:
+      - sales-headers
+  /api/sales/items/{itemCode}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sales information by item code (Protected route)
+      parameters:
+      - description: Item Code
+        in: path
+        name: itemCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/sales.SalesHeader'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales by item code
+      tags:
+      - sales-queries
+  /api/stock:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all stock information (Protected route)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/stock.Stock'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all stocks
+      tags:
+      - stock
+  /api/stock/{item_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve stock information for a specific item by its ID (Protected
+        route)
+      parameters:
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/stock.Stock'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get stock by item ID
+      tags:
+      - stock
+    put:
+      consumes:
+      - application/json
+      description: Update the quantity of stock for a specific item (Protected route)
+      parameters:
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: string
+      - description: Stock quantity update data
+        in: body
+        name: quantity
+        required: true
+        schema:
+          $ref: '#/definitions/stock.UpdateStockQuantityRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update stock quantity
+      tags:
+      - stock
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users (Protected route)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/users.UserResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - users
+  /api/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID (Protected route)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by their ID (Protected route)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update user information by ID (Protected route)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User update data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - users
+  /api/users/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change the password for a user (Protected route)
+      parameters:
+      - description: Password change data
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/users.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Change user password
+      tags:
+      - users
+  /api/users/username/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by their username (Protected route)
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user by username
+      tags:
+      - users
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Invalid login request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: User inactive
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - auth
+  /auth/refresh_token:
+    get:
+      consumes:
+      - application/json
+      description: Refreshes an existing JWT token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid or expired token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Refresh JWT token
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided information (Public route)
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /purchases/details:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new purchase detail with the provided information
+      parameters:
+      - description: Purchase detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/purchases.PurchaseDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Purchase detail created successfully
+          schema:
+            $ref: '#/definitions/purchases.PurchaseDetail'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new purchase detail
+      tags:
+      - purchases
+  /purchases/details/{header_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all purchase details for a specific purchase header
+      parameters:
+      - description: Purchase header ID
+        in: path
+        name: header_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of purchase details
+          schema:
+            items:
+              $ref: '#/definitions/purchases.PurchaseDetail'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get purchase details by header ID
+      tags:
+      - purchases
+  /purchases/details/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a purchase detail by its ID
+      parameters:
+      - description: Purchase detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Purchase detail deleted successfully
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a purchase detail by ID
+      tags:
+      - purchases
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing purchase detail with the provided information
+      parameters:
+      - description: Purchase detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Purchase detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/purchases.PurchaseDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase detail updated successfully
+          schema:
+            $ref: '#/definitions/purchases.PurchaseDetail'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a purchase detail
+      tags:
+      - purchases
+  /purchases/headers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all purchase headers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of purchase headers
+          schema:
+            items:
+              $ref: '#/definitions/purchases.PurchaseHeader'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all purchase headers
+      tags:
+      - purchases
+    post:
+      consumes:
+      - application/json
+      description: Creates a new purchase header with the provided information
+      parameters:
+      - description: Purchase header data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/purchases.PurchaseHeaderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Purchase header created successfully
+          schema:
+            $ref: '#/definitions/purchases.PurchaseHeader'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new purchase header
+      tags:
+      - purchases
+  /purchases/headers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a purchase header by its ID
+      parameters:
+      - description: Purchase header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Purchase header deleted successfully
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a purchase header by ID
+      tags:
+      - purchases
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a purchase header by its ID
+      parameters:
+      - description: Purchase header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase header found
+          schema:
+            $ref: '#/definitions/purchases.PurchaseHeader'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a purchase header by ID
+      tags:
+      - purchases
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing purchase header with the provided information
+      parameters:
+      - description: Purchase header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Purchase header data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/purchases.PurchaseHeaderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase header updated successfully
+          schema:
+            $ref: '#/definitions/purchases.PurchaseHeader'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a purchase header
+      tags:
+      - purchases
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
