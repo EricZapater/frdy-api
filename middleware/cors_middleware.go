@@ -13,6 +13,7 @@ func SetupCORS() gin.HandlerFunc {
 	corsConfig.AllowOrigins = []string{
     "http://localhost:5173",    
 	"https://frdy.zenith.ovh",
+	"*",
 }
 	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}
