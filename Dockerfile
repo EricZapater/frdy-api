@@ -8,8 +8,6 @@ RUN go mod download
 COPY . .
 RUN go mod tidy
 
-COPY migrations /app/migrations
-
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/api
 
@@ -18,6 +16,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/main .
-COPY --from=builder /app/migrations ./migrations
 EXPOSE 8125
 CMD ["./main"]
