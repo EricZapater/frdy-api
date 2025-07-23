@@ -15,5 +15,5 @@ func RegisterRoutes(router *gin.RouterGroup, handler *SalesHandler) {
 	router.PUT("/sales/details/:id", handler.UpdateSalesDetail)
 	router.GET("/sales/details/:headerID", handler.FindSalesDetailsByHeaderID)
 	router.DELETE("/sales/details/:id", handler.DeleteSalesDetailByID)
-	router.POST("/sales/headers/send/:id", handler.SendSalesHeader)
+	router.GET("/sales/headers/send/:id", handler.SendSalesHeader)
 }

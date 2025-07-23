@@ -76,9 +76,10 @@ func (s *Server) Setup() error {
 	userService := users.NewUserService(userRepo)
 	authService := auth.NewAuthService(userRepo, authMiddleware)
 	itemService := items.NewItemService(itemRepo)
-	salesService := sales.NewSalesService(salesRepo)
+	
 	stockService := stock.NewStockService(stockRepo)
-	purchaseService := purchases.NewPurchaseService(purchaseRepo)
+	salesService := sales.NewSalesService(salesRepo, stockService)
+	purchaseService := purchases.NewPurchaseService(purchaseRepo, stockService)
 
 
 

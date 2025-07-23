@@ -22,7 +22,7 @@ func NewStockRepository(db *sql.DB) StockRepository {
 func (r *stockRepository) GetStockByItemID(itemID string) (*Stock, error) {
 	var stock Stock
 	err := r.db.QueryRow(`
-		SELECT i.id, i.item_id, s.code as item_code,s.description as item_description, i.quantity
+		SELECT s.id, s.item_id, i.code as item_code,i.description as item_description, s.quantity
 		FROM stocks s
 			INNER JOIN items i ON s.item_id = i.id
 		WHERE i.item_id = $1`, itemID).Scan(&stock.ID, &stock.ItemID, &stock.ItemCode, &stock.ItemDescription, &stock.Quantity)
@@ -40,7 +40,7 @@ func (r *stockRepository) UpdateStockQuantity(itemID string, quantity int) error
 		INSERT INTO stocks (item_id, quantity)
 		VALUES ($1, $2)
 			ON CONFLICT (item_id) DO UPDATE SET
-    		quantity = stocks.quantity + EXCLUDED.quantity;`, quantity, itemID)
+    		quantity = stocks.quantity + EXCLUDED.quantity;`, itemID, quantity)
 	if err != nil {
 		return fmt.Errorf("error updating stock quantity: %w", err)
 	}
@@ -50,7 +50,7 @@ func (r *stockRepository) UpdateStockQuantity(itemID string, quantity int) error
 func (r *stockRepository) GetAllStocks() ([]Stock, error) {
 	var stocks []Stock
 	rows, err := r.db.Query(`
-		SELECT i.id, i.item_id, s.code as item_code, s.description as item_description, i.quantity
+		SELECT s.id, s.item_id, i.code as item_code, i.description as item_description, s.quantity
 		FROM stocks s
 			INNER JOIN items i ON s.item_id = i.id`)
 	if err != nil {

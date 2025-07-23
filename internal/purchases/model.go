@@ -6,7 +6,9 @@ import "time"
 type PurchaseHeader struct {
 	ID        string    `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" description:"Purchase header ID (UUID)"`
 	Code      string    `json:"code" example:"PH-001" description:"Purchase header code"`
+	SupplierName string    `json:"supplier_name" example:"Supplier A" description:"Name of the supplier"`
 	CreatedAt time.Time `json:"created_at" example:"2023-01-01T00:00:00Z" description:"Purchase creation date"`
+	Received bool      `json:"received" example:"false" description:"Indicates if the purchase has been received"`
 }
 
 // PurchaseDetail represents a purchase detail entity

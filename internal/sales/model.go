@@ -6,6 +6,7 @@ type SalesHeader struct {
 	ID           uuid.UUID `json:"id" binding:"required"`
 	Code         string    `json:"code" binding:"required"`
 	CustomerName string    `json:"customer_name" binding:"required"`
+	CustomerPhone string `json:"customer_phone"`
 	CreatedAt    string    `json:"created_at" binding:"required"`
 	Sent         bool      `json:"sent" binding:"required"`
 }

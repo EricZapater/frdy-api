@@ -4,8 +4,10 @@ import "time"
 
 // PurchaseHeaderRequest represents the request payload for creating/updating a purchase header
 type PurchaseHeaderRequest struct {
-	Code      string    `json:"code" binding:"required" example:"PH-001" description:"Purchase header code"`
-	CreatedAt time.Time `json:"created_at" binding:"required" example:"2023-01-01T00:00:00Z" description:"Purchase creation date"`
+	Code      string    `json:"code" example:"PH-001" description:"Purchase header code"`
+	SupplierName string    `json:"supplier_name" binding:"required" example:"Supplier A" description:"Name of the supplier"`
+	CreatedAt time.Time `json:"created_at" example:"2023-01-01T00:00:00Z" description:"Purchase creation date"`
+	Received bool `json:"received"`
 }
 
 // PurchaseDetailRequest represents the request payload for creating/updating a purchase detail

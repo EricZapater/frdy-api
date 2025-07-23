@@ -1,8 +1,9 @@
 package sales
 
 type SalesHeaderRequest struct {
-	Code         string `json:"code" binding:"required"`
-	CustomerName string `json:"customer_name" binding:"required"`
+	Code          string `json:"code"`
+	CustomerName  string `json:"customer_name" binding:"required"`
+	CustomerPhone string `json:"customer_phone"`
 }
 
 type SalesDetailRequest struct {

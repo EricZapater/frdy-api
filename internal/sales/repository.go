@@ -19,6 +19,7 @@ type SalesRepository interface {
 	FindSalesDetailsByHeaderID(headerID string) ([]SalesDetail, error)
 	DeleteSalesDetailByID(id string) error
 	SendSalesHeader(id string) (SalesHeader, error)
+	GetNextNumber()(string, error)
 }
 
 type salesRepository struct {
@@ -30,9 +31,9 @@ func NewSalesRepository(db *sql.DB) SalesRepository {
 }
 func (r *salesRepository) CreateSalesHeader(header SalesHeader) (SalesHeader, error) {
 	_, err := r.db.Exec(`
-		INSERT INTO sales_headers (id, code, customer_name, created_at, sent)
-		VALUES ($1, $2, $3, $4, $5)`,
-		header.ID, header.Code, header.CustomerName, header.CreatedAt, header.Sent,
+		INSERT INTO sales_headers (id, code, customer_name, customer_phone, created_at, sent)
+		VALUES ($1, $2, $3, $4, $5, $6)`,
+		header.ID, header.Code, header.CustomerName, header.CustomerPhone, header.CreatedAt, header.Sent,
 	)
 	if err != nil {
 		return SalesHeader{}, fmt.Errorf("error inserting sales header: %w", err)
@@ -43,9 +44,9 @@ func (r *salesRepository) CreateSalesHeader(header SalesHeader) (SalesHeader, er
 func (r *salesRepository) UpdateSalesHeader(header SalesHeader) (SalesHeader, error) {
 	_, err := r.db.Exec(`
 		UPDATE sales_headers
-		SET code = $1, customer_name = $2, sent = $3
-		WHERE id = $4`,
-		header.Code, header.CustomerName, header.Sent, header.ID,
+		SET code = $1, customer_name = $2, customer_phone= $3, sent = $4
+		WHERE id = $5`,
+		header.Code, header.CustomerName,header.CustomerPhone, header.Sent, header.ID,
 	)
 	if err != nil {
 		return SalesHeader{}, fmt.Errorf("error updating sales header: %w", err)
@@ -54,12 +55,12 @@ func (r *salesRepository) UpdateSalesHeader(header SalesHeader) (SalesHeader, er
 }
 func (r *salesRepository) FindSalesByHeaderID(id string) (SalesHeader, error) {
 	row := r.db.QueryRow(`
-		SELECT id, code, customer_name, created_at, sent
+		SELECT id, code, customer_name,COALESCE(customer_phone,'') as customer_phone, created_at, sent
 		FROM sales_headers
 		WHERE id = $1`, id)
 
 	var header SalesHeader
-	if err := row.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CreatedAt, &header.Sent); err != nil {
+	if err := row.Scan(&header.ID, &header.Code, &header.CustomerName,&header.CustomerPhone, &header.CreatedAt, &header.Sent); err != nil {
 		if err == sql.ErrNoRows {
 			return SalesHeader{}, fmt.Errorf("sales header not found: %w", err)
 		}
@@ -69,12 +70,12 @@ func (r *salesRepository) FindSalesByHeaderID(id string) (SalesHeader, error) {
 }
 func (r *salesRepository) FindSalesByHeaderCode(code string) (SalesHeader, error) {
 	row := r.db.QueryRow(`
-		SELECT id, code, customer_name, created_at, sent
+		SELECT id, code, customer_name, COALESCE(customer_phone,'') as customer_phone, created_at, sent
 		FROM sales_headers
 		WHERE code = $1`, code)
 
 	var header SalesHeader
-	if err := row.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CreatedAt, &header.Sent); err != nil {
+	if err := row.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CustomerPhone, &header.CreatedAt, &header.Sent); err != nil {
 		if err == sql.ErrNoRows {
 			return SalesHeader{}, fmt.Errorf("sales header not found: %w", err)
 		}
@@ -84,7 +85,7 @@ func (r *salesRepository) FindSalesByHeaderCode(code string) (SalesHeader, error
 }
 func (r *salesRepository) FindSalesByItemCode(itemCode string) ([]SalesHeader, error) {
 	rows, err := r.db.Query(`
-		SELECT sh.id, sh.code, sh.customer_name, sh.created_at, sh.sent
+		SELECT sh.id, sh.code, sh.customer_name, COALESCE(sh.customer_phone,'') as customer_phone, sh.created_at, sh.sent
 		FROM sales_headers sh
 		JOIN sales_details sd ON sh.id = sd.sales_header_id
 		WHERE sd.item_code = $1`, itemCode)
@@ -96,7 +97,7 @@ func (r *salesRepository) FindSalesByItemCode(itemCode string) ([]SalesHeader, e
 	var headers []SalesHeader
 	for rows.Next() {
 		var header SalesHeader
-		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CreatedAt, &header.Sent); err != nil {
+		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CustomerPhone, &header.CreatedAt, &header.Sent); err != nil {
 			return nil, fmt.Errorf("error scanning sales header: %w", err)
 		}
 		headers = append(headers, header)
@@ -105,7 +106,7 @@ func (r *salesRepository) FindSalesByItemCode(itemCode string) ([]SalesHeader, e
 }
 func (r *salesRepository) FindSalesByCustomerName(customerName string) ([]SalesHeader, error) {
 	rows, err := r.db.Query(`
-		SELECT id, code, customer_name, created_at, sent
+		SELECT id, code, customer_name, COALESCE(customer_phone,'') as customer_phone, created_at, sent
 		FROM sales_headers
 		WHERE customer_name ILIKE $1`, "%"+customerName+"%")
 	if err != nil {
@@ -116,7 +117,7 @@ func (r *salesRepository) FindSalesByCustomerName(customerName string) ([]SalesH
 	var headers []SalesHeader
 	for rows.Next() {
 		var header SalesHeader
-		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CreatedAt, &header.Sent); err != nil {
+		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CustomerPhone, &header.CreatedAt, &header.Sent); err != nil {
 			return nil, fmt.Errorf("error scanning sales header: %w", err)
 		}
 		headers = append(headers, header)
@@ -125,7 +126,7 @@ func (r *salesRepository) FindSalesByCustomerName(customerName string) ([]SalesH
 }
 func (r *salesRepository) FindAllSales() ([]SalesHeader, error) {
 	rows, err := r.db.Query(`
-		SELECT id, code, customer_name, created_at, sent
+		SELECT id, code, customer_name, COALESCE(customer_phone,'') as customer_phone,  created_at, sent
 		FROM sales_headers`)
 	if err != nil {
 		return nil, fmt.Errorf("error querying all sales: %w", err)
@@ -135,7 +136,7 @@ func (r *salesRepository) FindAllSales() ([]SalesHeader, error) {
 	var headers []SalesHeader
 	for rows.Next() {
 		var header SalesHeader
-		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CreatedAt, &header.Sent); err != nil {
+		if err := rows.Scan(&header.ID, &header.Code, &header.CustomerName, &header.CustomerPhone, &header.CreatedAt, &header.Sent); err != nil {
 			return nil, fmt.Errorf("error scanning sales header: %w", err)
 		}
 		headers = append(headers, header)
@@ -226,4 +227,23 @@ func (r *salesRepository) SendSalesHeader(id string) (SalesHeader, error) {
 		return SalesHeader{}, fmt.Errorf("error finding sales header after sending: %w", err)
 	}
 	return header, nil
+}
+
+func (r *salesRepository) GetNextNumber()(string, error){
+	var nextCounter string
+	err := r.db.QueryRow(`
+	SELECT   
+		REPEAT(
+			'0',
+			10 - LENGTH(CAST(COALESCE(MAX(CAST(code AS integer)), 0) + 1 AS varchar))
+		) || CAST(COALESCE(MAX(CAST(code AS integer)), 0) + 1 AS varchar) AS next_counter
+		FROM sales_headers
+	`).Scan(&nextCounter)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "0000000001", nil
+		}
+		return "", err
+	}
+	return nextCounter, nil
 }

@@ -9,6 +9,7 @@ func RegisterRoutes(router *gin.RouterGroup, handler *PurchasesHandler) {
 	router.GET("/purchases/headers/:id", handler.FindPurchaseByID)
 	router.GET("/purchases/headers", handler.FindAllPurchases)
 	router.DELETE("/purchases/headers/:id", handler.DeletePurchaseByID)
+	router.GET("/purchases/headers/receive/:id", handler.ReceivePurchaseHeader)
 
 	// Details
 	router.POST("/purchases/details", handler.CreatePurchaseDetail)

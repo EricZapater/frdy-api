@@ -11,6 +11,8 @@ type PurchaseRepository interface {
 	FindPurchaseByID(id string) (PurchaseHeader, error)
 	FindAllPurchases() ([]PurchaseHeader, error)
 	DeletePurchaseByID(id string) error
+	ReceivePurchaseHeader(id string) (PurchaseHeader, error)
+	GetNextNumber()(string, error)
 
 	CreatePurchaseDetail(detail PurchaseDetail) (PurchaseDetail, error)
 	UpdatePurchaseDetail(detail PurchaseDetail) (PurchaseDetail, error)
@@ -30,9 +32,9 @@ func NewPurchaseRepository(db *sql.DB) PurchaseRepository {
 
 func (r *purchaseRepository) CreatePurchaseHeader(header PurchaseHeader) (PurchaseHeader, error) {
 	_, err := r.db.Exec(`
-		INSERT INTO purchase_headers (id, code, created_at)
-		VALUES ($1, $2, $3)`,
-		header.ID, header.Code, header.CreatedAt,
+		INSERT INTO purchase_headers (id, code, supplier_name, created_at)
+		VALUES ($1, $2, $3, $4)`,
+		header.ID, header.Code,header.SupplierName, header.CreatedAt,
 	)
 	if err != nil {
 		return PurchaseHeader{}, fmt.Errorf("error inserting purchase header: %w", err)
@@ -43,9 +45,9 @@ func (r *purchaseRepository) CreatePurchaseHeader(header PurchaseHeader) (Purcha
 func (r *purchaseRepository) UpdatePurchaseHeader(header PurchaseHeader) (PurchaseHeader, error) {
 	_, err := r.db.Exec(`
 		UPDATE purchase_headers
-		SET code = $1
-		WHERE id = $2`,
-		header.Code, header.ID,
+		SET code = $1, supplier_name = $2
+		WHERE id = $3`,
+		header.Code, header.SupplierName, header.ID,
 	)
 	if err != nil {
 		return PurchaseHeader{}, fmt.Errorf("error updating purchase header: %w", err)
@@ -55,12 +57,12 @@ func (r *purchaseRepository) UpdatePurchaseHeader(header PurchaseHeader) (Purcha
 
 func (r *purchaseRepository) FindPurchaseByID(id string) (PurchaseHeader, error) {
 	row := r.db.QueryRow(`
-		SELECT id, code, created_at
+		SELECT id, code, supplier_name,  created_at, received
 		FROM purchase_headers
 		WHERE id = $1`, id)
 
 	var header PurchaseHeader
-	if err := row.Scan(&header.ID, &header.Code, &header.CreatedAt); err != nil {
+	if err := row.Scan(&header.ID, &header.Code, &header.SupplierName, &header.CreatedAt, &header.Received); err != nil {
 		if err == sql.ErrNoRows {
 			return PurchaseHeader{}, fmt.Errorf("purchase header not found: %w", err)
 		}
@@ -71,7 +73,7 @@ func (r *purchaseRepository) FindPurchaseByID(id string) (PurchaseHeader, error)
 
 func (r *purchaseRepository) FindAllPurchases() ([]PurchaseHeader, error) {
 	rows, err := r.db.Query(`
-		SELECT id, code, created_at
+		SELECT id, code, supplier_name, created_at, received
 		FROM purchase_headers`)
 	if err != nil {
 		return nil, fmt.Errorf("error querying all purchase headers: %w", err)
@@ -81,7 +83,7 @@ func (r *purchaseRepository) FindAllPurchases() ([]PurchaseHeader, error) {
 	var headers []PurchaseHeader
 	for rows.Next() {
 		var header PurchaseHeader
-		if err := rows.Scan(&header.ID, &header.Code, &header.CreatedAt); err != nil {
+		if err := rows.Scan(&header.ID, &header.Code, &header.SupplierName, &header.CreatedAt, &header.Received); err != nil {
 			return nil, fmt.Errorf("error scanning purchase header: %w", err)
 		}
 		headers = append(headers, header)
@@ -103,9 +105,9 @@ func (r *purchaseRepository) DeletePurchaseByID(id string) error {
 
 func (r *purchaseRepository) CreatePurchaseDetail(detail PurchaseDetail) (PurchaseDetail, error) {
 	_, err := r.db.Exec(`
-		INSERT INTO purchase_details (id, item_id, quantity, cost, amount)
-		VALUES ($1, $2, $3, $4, $5)`,
-		detail.ID, detail.ItemID, detail.Quantity, detail.Cost, detail.Amount,
+		INSERT INTO purchase_details (id, item_id, purchase_header_id, quantity, cost, amount)
+		VALUES ($1, $2, $3, $4, $5, $6)`,
+		detail.ID, detail.ItemID, detail.PurchaseHeaderID, detail.Quantity, detail.Cost, detail.Amount,
 	)
 	if err != nil {
 		return PurchaseDetail{}, fmt.Errorf("error inserting purchase detail: %w", err)
@@ -132,12 +134,8 @@ func (r *purchaseRepository) FindDetailsByPurchaseID(headerID string) ([]Purchas
 		       pd.quantity, pd.cost, pd.amount
 		FROM purchase_details pd
 		INNER JOIN items i ON pd.item_id = i.id
-		WHERE pd.id IN (
-			SELECT pd.id
-			FROM purchase_details pd
-			JOIN purchase_headers ph ON TRUE
-			WHERE ph.id = $1
-		)`, headerID)
+		WHERE pd.purchase_header_id  = $1
+		`, headerID)
 	if err != nil {
 		return nil, fmt.Errorf("error querying purchase details: %w", err)
 	}
@@ -163,4 +161,39 @@ func (r *purchaseRepository) DeletePurchaseDetailByID(id string) error {
 		return fmt.Errorf("error deleting purchase detail: %w", err)
 	}
 	return nil
+}
+
+func (r *purchaseRepository) ReceivePurchaseHeader(id string) (PurchaseHeader, error) {
+	_, err := r.db.Exec(`
+		UPDATE purchase_headers
+		SET received = TRUE
+		WHERE id = $1`, id)
+	if err != nil {
+		return PurchaseHeader{}, fmt.Errorf("error receiving purchase header: %w", err)
+	}
+
+	header, err := r.FindPurchaseByID(id)
+	if err != nil {
+		return PurchaseHeader{}, fmt.Errorf("error fetching updated purchase header: %w", err)
+	}
+	return header, nil
+}
+
+func(r *purchaseRepository) GetNextNumber()(string, error){
+	var nextCounter string
+	err := r.db.QueryRow(`
+	SELECT   
+		REPEAT(
+			'0',
+			10 - LENGTH(CAST(COALESCE(MAX(CAST(code AS integer)), 0) + 1 AS varchar))
+		) || CAST(COALESCE(MAX(CAST(code AS integer)), 0) + 1 AS varchar) AS next_counter
+		FROM purchase_headers
+	`).Scan(&nextCounter)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "0000000001", nil
+		}
+		return "", err
+	}
+	return nextCounter, nil
 }

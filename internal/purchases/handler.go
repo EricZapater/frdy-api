@@ -237,3 +237,27 @@ func (h *PurchasesHandler) DeletePurchaseDetailByID(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+
+// ReceivePurchaseHeader godoc
+// @Summary Receive purchase header
+// @Description Marks a purchase header as received by its ID
+// @Tags purchase-headers
+// @Accept json
+// @Produce json
+// @Param id path string true "Purchase Header ID"
+// @Success 200 {object} PurchaseHeader "Purchase header received successfully"
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 500 {object} map[string]string
+// @Router /api/purchases/headers/received/{id} [get]
+// @Security BearerAuth
+func(h *PurchasesHandler) ReceivePurchaseHeader(c *gin.Context) {
+	id := c.Param("id")
+	header, err := h.service.ReceivePurchaseHeader(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, header)
+}

@@ -2,6 +2,8 @@ package purchases
 
 import (
 	"errors"
+	"frdy-api/internal/stock"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -12,6 +14,7 @@ type PurchaseService interface {
 	FindPurchaseByID(id string) (PurchaseHeader, error)
 	FindAllPurchases() ([]PurchaseHeader, error)
 	DeletePurchaseByID(id string) error
+	ReceivePurchaseHeader(id string) (PurchaseHeader, error)
 
 	CreatePurchaseDetail(request PurchaseDetailRequest) (PurchaseDetail, error)
 	UpdatePurchaseDetail(id string, request PurchaseDetailRequest) (PurchaseDetail, error)
@@ -21,23 +24,26 @@ type PurchaseService interface {
 
 type purchaseService struct {
 	repo PurchaseRepository
+	stock stock.StockService
 }
 
-func NewPurchaseService(repo PurchaseRepository) PurchaseService {
-	return &purchaseService{repo: repo}
+func NewPurchaseService(repo PurchaseRepository, stock stock.StockService) PurchaseService {
+	return &purchaseService{repo: repo, stock: stock}
 }
 
 // Header methods
 
 func (s *purchaseService) CreatePurchaseHeader(request PurchaseHeaderRequest) (PurchaseHeader, error) {
-	if request.Code == "" {
-		return PurchaseHeader{}, errors.New("code is required")
+	next_counter, err := s.repo.GetNextNumber()
+	if err != nil {
+		return PurchaseHeader{}, errors.New("invalid counter")
 	}
 
 	header := PurchaseHeader{
 		ID:        uuid.New().String(),
-		Code:      request.Code,
-		CreatedAt: request.CreatedAt,
+		Code:      next_counter,
+		SupplierName: request.SupplierName,
+		CreatedAt: time.Now(),
 	}
 
 	return s.repo.CreatePurchaseHeader(header)
@@ -132,4 +138,26 @@ func (s *purchaseService) DeletePurchaseDetailByID(id string) error {
 		return errors.New("detail ID is required")
 	}
 	return s.repo.DeletePurchaseDetailByID(id)
+}
+
+func (s *purchaseService) ReceivePurchaseHeader(id string) (PurchaseHeader, error) {
+	if id == "" {
+		return PurchaseHeader{}, errors.New("id is required")
+	}
+
+	header, err := s.repo.ReceivePurchaseHeader(id)
+	if err != nil {
+		return PurchaseHeader{}, err
+	}
+	details, err := s.repo.FindDetailsByPurchaseID(header.ID)
+	if err != nil {
+		return PurchaseHeader{}, err
+	}
+	for _, detail := range details {
+		if err := s.stock.UpdateStockQuantity(detail.ItemID, detail.Quantity); err != nil {
+			return PurchaseHeader{}, err
+		}
+	}
+
+	return header, nil
 }

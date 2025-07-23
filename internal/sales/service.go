@@ -2,6 +2,7 @@ package sales
 
 import (
 	"errors"
+	"frdy-api/internal/stock"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,21 +26,28 @@ type SalesService interface {
 
 type salesService struct {
 	repo SalesRepository
+	stock stock.StockService
 }
 
-func NewSalesService(repo SalesRepository) SalesService {
-	return &salesService{repo: repo}
+func NewSalesService(repo SalesRepository, stock stock.StockService) SalesService {
+	return &salesService{repo: repo, stock:stock}
 }
 
 func (s *salesService) CreateSalesHeader(request SalesHeaderRequest) (SalesHeader, error) {
-	if request.Code == "" || request.CustomerName == "" {
+	if  request.CustomerName == "" {
 		return SalesHeader{}, errors.New("invalid request")
+	}
+
+	counter, err := s.repo.GetNextNumber()
+	if err != nil {
+		return SalesHeader{}, errors.New("cannot get counter")
 	}
 
 	header := SalesHeader{
 		ID:           uuid.New(),
-		Code:         request.Code,
+		Code:         counter,
 		CustomerName: request.CustomerName,
+		CustomerPhone: request.CustomerPhone,
 		CreatedAt:    time.Now().Format(time.RFC3339),
 		Sent:         false, // Default to not sent
 	}
@@ -61,6 +69,7 @@ func (s *salesService) UpdateSalesHeader(id string, request SalesHeaderRequest) 
 		ID:           headerID,
 		Code:         request.Code,
 		CustomerName: request.CustomerName,
+		CustomerPhone: request.CustomerPhone,
 	}
 
 	return s.repo.UpdateSalesHeader(header)
@@ -181,5 +190,15 @@ func (s *salesService) SendSalesHeader(id string) (SalesHeader, error) {
 	if err != nil {
 		return SalesHeader{}, err
 	}
+	details, err := s.repo.FindSalesDetailsByHeaderID(id)
+	if err != nil {
+		return SalesHeader{}, err
+	}
+	for _, detail := range details {
+		if err := s.stock.UpdateStockQuantity(detail.ItemID, -detail.Quantity); err != nil {
+			return SalesHeader{}, err
+		}
+	}
+
 	return header, nil
 }
