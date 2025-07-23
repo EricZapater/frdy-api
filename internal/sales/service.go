@@ -195,7 +195,8 @@ func (s *salesService) SendSalesHeader(id string) (SalesHeader, error) {
 		return SalesHeader{}, err
 	}
 	for _, detail := range details {
-		if err := s.stock.UpdateStockQuantity(detail.ItemID, -detail.Quantity); err != nil {
+		qty := (-1) * detail.Quantity
+		if err := s.stock.UpdateStockQuantity(detail.ItemID, qty); err != nil {
 			return SalesHeader{}, err
 		}
 	}

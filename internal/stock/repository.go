@@ -35,7 +35,7 @@ func (r *stockRepository) GetStockByItemID(itemID string) (*Stock, error) {
 	return &stock, nil
 }
 
-func (r *stockRepository) UpdateStockQuantity(itemID string, quantity int) error {
+func (r *stockRepository) UpdateStockQuantity(itemID string, quantity int) error {	
 	_, err := r.db.Exec(`
 		INSERT INTO stocks (item_id, quantity)
 		VALUES ($1, $2)

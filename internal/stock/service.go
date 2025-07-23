@@ -27,7 +27,7 @@ func (s *stockService) GetStockByItemID(itemID string) (Stock, error) {
 	return *stock, nil
 }
 func (s *stockService) UpdateStockQuantity(itemID string, quantity int) error {
-	if itemID == "" || quantity < 0 {
+	if itemID == "" || quantity == 0 {
 		return errors.New("invalid item ID or quantity")
 	}
 	return s.repo.UpdateStockQuantity(itemID, quantity)
